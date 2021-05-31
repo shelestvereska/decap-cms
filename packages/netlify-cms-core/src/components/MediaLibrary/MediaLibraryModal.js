@@ -14,7 +14,7 @@ import { colors } from 'netlify-cms-ui-default';
  * Responsive styling needs to be overhauled. Current setup requires specifying
  * widths per breakpoint.
  */
-const cardWidth = `280px`;
+const cardWidth = `240px`;
 const cardHeight = `240px`;
 const cardMargin = `10px`;
 
@@ -26,7 +26,7 @@ const cardOutsideWidth = `300px`;
 
 const StyledModal = styled(Modal)`
   display: grid;
-  grid-template-rows: 120px auto;
+  grid-template-rows: 170px auto;
   width: calc(${cardOutsideWidth} + 20px);
   background-color: ${props => props.isPrivate && colors.grayDark};
 
@@ -64,6 +64,7 @@ function MediaLibraryModal({
   isVisible,
   canInsert,
   files,
+  folders,
   dynamicSearch,
   dynamicSearchActive,
   forImage,
@@ -83,14 +84,19 @@ function MediaLibraryModal({
   handleSearchKeyDown,
   handlePersist,
   handleDelete,
+  handleCreateFolder,
   handleInsert,
   handleDownload,
   setScrollContainerRef,
   handleAssetClick,
+  handleBreadcrumbClick,
   handleLoadMore,
   loadDisplayURL,
   displayURLs,
   t,
+  currentMediaFolder,
+  defaultMediaFolder,
+  mediaFolderNavDisabled,
 }) {
   const filteredFiles = forImage ? handleFilter(files) : files;
   const queriedFiles = !dynamicSearch && query ? handleQuery(query, filteredFiles) : filteredFiles;
@@ -123,13 +129,20 @@ function MediaLibraryModal({
         onSearchKeyDown={handleSearchKeyDown}
         searchDisabled={!dynamicSearchActive && !hasFilteredFiles}
         onDelete={handleDelete}
+        onCreateFolder={handleCreateFolder}
         canInsert={canInsert}
         onInsert={handleInsert}
         hasSelection={hasSelection}
         isPersisting={isPersisting}
         isDeleting={isDeleting}
+        handleBreadcrumbClick={handleBreadcrumbClick}
+        currentMediaFolder={currentMediaFolder}
+        defaultMediaFolder={defaultMediaFolder}
+        mediaFolderNavDisabled={mediaFolderNavDisabled}
         selectedFile={selectedFile}
+        folders={folders}
       />
+
       {!shouldShowEmptyMessage ? null : (
         <EmptyMessage content={emptyMessage} isPrivate={privateUpload} />
       )}
@@ -149,6 +162,7 @@ function MediaLibraryModal({
         isPrivate={privateUpload}
         loadDisplayURL={loadDisplayURL}
         displayURLs={displayURLs}
+        mediaFolderNavDisabled={mediaFolderNavDisabled}
       />
     </StyledModal>
   );
@@ -188,8 +202,10 @@ MediaLibraryModal.propTypes = {
   handlePersist: PropTypes.func.isRequired,
   handleDelete: PropTypes.func.isRequired,
   handleInsert: PropTypes.func.isRequired,
+  handleCreateFolder: PropTypes.func.isRequired,
   setScrollContainerRef: PropTypes.func.isRequired,
   handleAssetClick: PropTypes.func.isRequired,
+  handleBreadcrumbClick: PropTypes.func.isRequired,
   handleLoadMore: PropTypes.func.isRequired,
   loadDisplayURL: PropTypes.func.isRequired,
   t: PropTypes.func.isRequired,

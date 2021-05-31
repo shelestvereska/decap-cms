@@ -34,7 +34,7 @@ import {
 } from 'netlify-cms-lib-util';
 import AuthenticationPage from './AuthenticationPage';
 import { Octokit } from '@octokit/rest';
-import API, { API_NAME } from './API';
+import API, { API_NAME, TreeFileType } from './API';
 import GraphQLAPI from './GraphQLAPI';
 
 type GitHubUser = Octokit.UsersGetAuthenticatedResponse;
@@ -439,14 +439,25 @@ export default class GitHub implements Implementation {
       .catch(() => ({ file: { path, id: null }, data: '' }));
   }
 
-  getMedia(mediaFolder = this.mediaFolder) {
-    return this.api!.listFiles(mediaFolder).then(files =>
-      files.map(({ id, name, size, path }) => {
-        // load media using getMediaDisplayURL to avoid token expiration with GitHub raw content urls
-        // for private repositories
-        return { id, name, size, displayURL: { id, path }, path };
-      }),
-    );
+  async getMedia(mediaFolder = this.mediaFolder) {
+    const files = await this.api!.listFiles(mediaFolder, {
+      types: [TreeFileType.BLOB, TreeFileType.TREE],
+      depth: 100,
+    });
+    const withDisplayUrls = files.map(({ id, name, size, path, type }) => {
+      // load media using getMediaDisplayURL to avoid token expiration with GitHub raw content urls
+      // for private repositories
+      return {
+        id,
+        name,
+        size,
+        displayURL: { id, path },
+        path,
+        isDirectory: type === TreeFileType.TREE,
+        hasChildren: files.filter(file => file.path.startsWith(path)).length > 1,
+      };
+    });
+    return withDisplayUrls;
   }
 
   async getMediaFile(path: string) {

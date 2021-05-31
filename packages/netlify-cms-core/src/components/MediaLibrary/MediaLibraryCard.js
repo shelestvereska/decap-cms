@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import styled from '@emotion/styled';
-import { colors, borders, lengths, shadows, effects } from 'netlify-cms-ui-default';
+import { colors, borders, lengths, shadows, effects, Icon } from 'netlify-cms-ui-default';
 
 const IMAGE_HEIGHT = 160;
 
@@ -40,10 +40,20 @@ const CardImage = styled.img`
 const CardFileIcon = styled.div`
   width: 100%;
   height: 160px;
+  object-fit: contain;
+  border-radius: 2px 2px 0 0;
+  padding: 1em;
+  font-size: 3em;
+`;
+
+const CardDirectoryWrapper = styled.div`
+  width: 100%;
+  height: 160px;
   object-fit: cover;
   border-radius: 2px 2px 0 0;
   padding: 1em;
   font-size: 3em;
+  background: #eee;
 `;
 
 const CardText = styled.p`
@@ -77,33 +87,46 @@ class MediaLibraryCard extends React.Component {
       type,
       isViewableImage,
       isDraft,
+      isDirectory,
+      mediaFolderNavDisabled,
     } = this.props;
     const url = displayURL.get('url');
+    const cardImageWrapper = (
+      <CardImageWrapper>
+        {isDraft ? <DraftText data-testid="draft-text">{draftText}</DraftText> : null}
+        {url && isViewableImage ? (
+          <CardImage src={url} />
+        ) : (
+          <CardFileIcon data-testid="card-file-icon">{type}</CardFileIcon>
+        )}
+      </CardImageWrapper>
+    );
+    const cardDirectoryEl = (
+      <CardDirectoryWrapper>
+        <Icon type="folder" size="max" />
+      </CardDirectoryWrapper>
+    );
+    const disabled = isDirectory && mediaFolderNavDisabled;
+    const previewElement = isDirectory ? cardDirectoryEl : cardImageWrapper;
     return (
       <Card
         isSelected={isSelected}
-        onClick={onClick}
+        onClick={!disabled ? onClick : null}
         width={width}
         height={height}
         margin={margin}
         tabIndex="-1"
         isPrivate={isPrivate}
+        disabled={disabled}
       >
-        <CardImageWrapper>
-          {isDraft ? <DraftText data-testid="draft-text">{draftText}</DraftText> : null}
-          {url && isViewableImage ? (
-            <CardImage src={url} />
-          ) : (
-            <CardFileIcon data-testid="card-file-icon">{type}</CardFileIcon>
-          )}
-        </CardImageWrapper>
+        {previewElement}
         <CardText>{text}</CardText>
       </Card>
     );
   }
   componentDidMount() {
-    const { displayURL, loadDisplayURL } = this.props;
-    if (!displayURL.get('url')) {
+    const { displayURL, loadDisplayURL, isViewableImage } = this.props;
+    if (!displayURL.get('url') && isViewableImage) {
       loadDisplayURL();
     }
   }

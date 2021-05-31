@@ -25,6 +25,7 @@ function CardWrapper(props) {
       loadDisplayURL,
       columnCount,
       gutter,
+      mediaFolderNavDisabled,
     },
   } = props;
   const index = rowIndex * columnCount + columnIndex;
@@ -58,6 +59,10 @@ function CardWrapper(props) {
         loadDisplayURL={() => loadDisplayURL(file)}
         type={file.type}
         isViewableImage={file.isViewableImage}
+        isDirectory={file.isDirectory}
+        hasChildren={file.hasChildren}
+        size={file.size}
+        mediaFolderNavDisabled={mediaFolderNavDisabled}
       />
     </div>
   );
@@ -112,6 +117,7 @@ function PaginatedGrid({
   onLoadMore,
   isPaginating,
   paginatingMessage,
+  mediaFolderNavDisabled,
 }) {
   return (
     <CardGridContainer ref={setScrollContainerRef}>
@@ -132,6 +138,7 @@ function PaginatedGrid({
             loadDisplayURL={() => loadDisplayURL(file)}
             type={file.type}
             isViewableImage={file.isViewableImage}
+            mediaFolderNavDisabled={mediaFolderNavDisabled}
           />
         ))}
         {!canLoadMore ? null : <Waypoint onEnter={onLoadMore} />}
