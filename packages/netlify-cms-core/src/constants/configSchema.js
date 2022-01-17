@@ -1,41 +1,34 @@
 import AJV from 'ajv';
-import {
-  select,
-  uniqueItemProperties,
-  instanceof as instanceOf,
-  prohibited,
-} from 'ajv-keywords/dist/keywords';
-import ajvErrors from 'ajv-errors';
+import ajvKeywords from 'ajv-keywords';
 import uuid from 'uuid/v4';
+import { set } from 'lodash/fp';
 
-import { formatExtensions, frontmatterFormats, extensionFormatters } from '../formats/formats';
 import { getWidgets } from '../lib/registry';
-import { I18N_STRUCTURE, I18N_FIELD } from '../lib/i18n';
+import { I18N_FIELD } from '../lib/i18n';
+import schema from '../../config.schema.json';
+import staticValidateConfig from './staticValidateConfig';
 
-const localeType = { type: 'string', minLength: 2, maxLength: 10, pattern: '^[a-zA-Z-_]+$' };
-
-const i18n = {
-  type: 'object',
-  properties: {
-    structure: { type: 'string', enum: Object.values(I18N_STRUCTURE) },
-    locales: {
-      type: 'array',
-      minItems: 2,
-      items: localeType,
-      uniqueItems: true,
-    },
-    default_locale: localeType,
-  },
-};
-
-const i18nRoot = {
-  ...i18n,
-  required: ['structure', 'locales'],
-};
-
-const i18nCollection = {
-  oneOf: [{ type: 'boolean' }, i18n],
-};
+// taken from config.schema.json
+// config.properties.collections.items.properties.files.items.properties.fields.items.selectCases
+const NativeCMSWidgets = [
+  'unknown',
+  'string',
+  'number',
+  'text',
+  'image',
+  'file',
+  'select',
+  'markdown',
+  'list',
+  'object',
+  'relation',
+  'boolean',
+  'map',
+  'date',
+  'datetime',
+  'code',
+  'color',
+];
 
 const i18nField = {
   oneOf: [{ type: 'boolean' }, { type: 'string', enum: Object.values(I18N_FIELD) }],
@@ -80,249 +73,28 @@ function fieldsConfig() {
   };
 }
 
-const viewFilters = {
-  type: 'array',
-  minItems: 1,
-  items: {
-    type: 'object',
-    properties: {
-      label: { type: 'string' },
-      field: { type: 'string' },
-      pattern: {
-        oneOf: [
-          { type: 'boolean' },
-          {
-            type: 'string',
-          },
-        ],
-      },
-    },
-    additionalProperties: false,
-    required: ['label', 'field', 'pattern'],
-  },
-};
-
-const viewGroups = {
-  type: 'array',
-  minItems: 1,
-  items: {
-    type: 'object',
-    properties: {
-      label: { type: 'string' },
-      field: { type: 'string' },
-      pattern: { type: 'string' },
-    },
-    additionalProperties: false,
-    required: ['label', 'field'],
-  },
-};
-
 /**
  * The schema had to be wrapped in a function to
  * fix a circular dependency problem for WebPack,
  * where the imports get resolved asynchronously.
  */
-function getConfigSchema() {
-  return {
-    type: 'object',
-    properties: {
-      backend: {
-        type: 'object',
-        properties: {
-          name: { type: 'string', examples: ['test-repo'] },
-          auth_scope: {
-            type: 'string',
-            examples: ['repo', 'public_repo'],
-            enum: ['repo', 'public_repo'],
-          },
-          cms_label_prefix: { type: 'string', minLength: 1 },
-          open_authoring: { type: 'boolean', examples: [true] },
-        },
-        required: ['name'],
-      },
-      local_backend: {
-        oneOf: [
-          { type: 'boolean' },
-          {
-            type: 'object',
-            properties: {
-              url: { type: 'string', examples: ['http://localhost:8081/api/v1'] },
-              allowed_hosts: {
-                type: 'array',
-                items: { type: 'string' },
-              },
-            },
-            additionalProperties: false,
-          },
-        ],
-      },
-      locale: { type: 'string', examples: ['en', 'fr', 'de'] },
-      i18n: i18nRoot,
-      site_url: { type: 'string', examples: ['https://example.com'] },
-      display_url: { type: 'string', examples: ['https://example.com'] },
-      logo_url: { type: 'string', examples: ['https://example.com/images/logo.svg'] },
-      show_preview_links: { type: 'boolean' },
-      media_folder: { type: 'string', examples: ['assets/uploads'] },
-      public_folder: { type: 'string', examples: ['/uploads'] },
-      media_folder_relative: { type: 'boolean' },
-      media_library: {
-        type: 'object',
-        properties: {
-          name: { type: 'string', examples: ['uploadcare'] },
-          config: { type: 'object' },
-        },
-        required: ['name'],
-      },
-      publish_mode: {
-        type: 'string',
-        enum: ['simple', 'editorial_workflow'],
-        examples: ['editorial_workflow'],
-      },
-      slug: {
-        type: 'object',
-        properties: {
-          encoding: { type: 'string', enum: ['unicode', 'ascii'] },
-          clean_accents: { type: 'boolean' },
-        },
-      },
-      collections: {
-        type: 'array',
-        minItems: 1,
-        items: {
-          // ------- Each collection: -------
-          type: 'object',
-          properties: {
-            name: { type: 'string' },
-            label: { type: 'string' },
-            label_singular: { type: 'string' },
-            description: { type: 'string' },
-            folder: { type: 'string' },
-            files: {
-              type: 'array',
-              items: {
-                // ------- Each file: -------
-                type: 'object',
-                properties: {
-                  name: { type: 'string' },
-                  label: { type: 'string' },
-                  label_singular: { type: 'string' },
-                  description: { type: 'string' },
-                  file: { type: 'string' },
-                  preview_path: { type: 'string' },
-                  preview_path_date_field: { type: 'string' },
-                  fields: fieldsConfig(),
-                },
-                required: ['name', 'label', 'file', 'fields'],
-              },
-              uniqueItemProperties: ['name'],
-            },
-            identifier_field: { type: 'string' },
-            summary: { type: 'string' },
-            slug: { type: 'string' },
-            path: { type: 'string' },
-            preview_path: { type: 'string' },
-            preview_path_date_field: { type: 'string' },
-            create: { type: 'boolean' },
-            publish: { type: 'boolean' },
-            hide: { type: 'boolean' },
-            editor: {
-              type: 'object',
-              properties: {
-                preview: { type: 'boolean' },
-              },
-            },
-            format: { type: 'string', enum: Object.keys(formatExtensions) },
-            extension: { type: 'string' },
-            frontmatter_delimiter: {
-              type: ['string', 'array'],
-              minItems: 2,
-              maxItems: 2,
-              items: {
-                type: 'string',
-              },
-            },
-            fields: fieldsConfig(),
-            sortable_fields: {
-              type: 'array',
-              items: {
-                type: 'string',
-              },
-            },
-            sortableFields: {
-              type: 'array',
-              items: {
-                type: 'string',
-              },
-            },
-            view_filters: viewFilters,
-            view_groups: viewGroups,
-            nested: {
-              type: 'object',
-              properties: {
-                depth: { type: 'number', minimum: 1, maximum: 1000 },
-                summary: { type: 'string' },
-              },
-              required: ['depth'],
-            },
-            meta: {
-              type: 'object',
-              properties: {
-                path: {
-                  type: 'object',
-                  properties: {
-                    label: { type: 'string' },
-                    widget: { type: 'string' },
-                    index_file: { type: 'string' },
-                  },
-                  required: ['label', 'widget', 'index_file'],
-                },
-              },
-              additionalProperties: false,
-              minProperties: 1,
-            },
-            i18n: i18nCollection,
-          },
-          required: ['name', 'label'],
-          oneOf: [{ required: ['files'] }, { required: ['folder', 'fields'] }],
-          not: {
-            required: ['sortable_fields', 'sortableFields'],
-          },
-          if: { required: ['extension'] },
-          then: {
-            // Cannot infer format from extension.
-            if: {
-              properties: {
-                extension: { enum: Object.keys(extensionFormatters) },
-              },
-            },
-            else: { required: ['format'] },
-          },
-          dependencies: {
-            frontmatter_delimiter: {
-              properties: {
-                format: { enum: frontmatterFormats },
-              },
-              required: ['format'],
-            },
-          },
-        },
-        uniqueItemProperties: ['name'],
-      },
-      editor: {
-        type: 'object',
-        properties: {
-          preview: { type: 'boolean' },
-        },
-      },
-    },
-    required: ['backend', 'collections'],
-    anyOf: [{ required: ['media_folder'] }, { required: ['media_library'] }],
-  };
+export function getConfigSchema() {
+  // This will immutably apply fields schema to the schema properites that need them
+  const s1 = set(
+    'properties.collections.items.properties.files.items.properties.fields',
+    fieldsConfig(),
+    schema,
+  );
+  const s2 = set('properties.collections.items.properties.fields', fieldsConfig(), s1);
+  return s2;
 }
 
 function getWidgetSchemas() {
-  const schemas = getWidgets().map(widget => ({ [widget.name]: widget.schema }));
-  return Object.assign(...schemas);
+  const widgets = getWidgets();
+  const schemas = widgets
+    .filter(widget => widget.schema)
+    .map(widget => ({ [widget.name]: widget.schema }));
+  return Object.assign({}, ...schemas);
 }
 
 class ConfigError extends Error {
@@ -353,47 +125,74 @@ class ConfigError extends Error {
  * `validateConfig` is a pure function. It does not mutate
  * the config that is passed in.
  */
-export function validateConfig(config) {
+function dynamicValidateConfig(config) {
   const ajv = new AJV({ allErrors: true, $data: true, strict: false });
-  uniqueItemProperties(ajv);
-  select(ajv);
-  instanceOf(ajv);
-  prohibited(ajv);
-  ajvErrors(ajv);
+
+  ajvKeywords(ajv, ['instanceof', 'select', 'uniqueItemProperties']);
 
   const valid = ajv.validate(getConfigSchema(), config);
-  if (!valid) {
-    const errors = ajv.errors.map(e => {
-      switch (e.keyword) {
-        // TODO: remove after https://github.com/ajv-validator/ajv-keywords/pull/123 is merged
-        case 'uniqueItemProperties': {
-          const path = e.instancePath || '';
-          let newError = e;
-          if (path.endsWith('/fields')) {
-            newError = { ...e, message: 'fields names must be unique' };
-          } else if (path.endsWith('/files')) {
-            newError = { ...e, message: 'files names must be unique' };
-          } else if (path.endsWith('/collections')) {
-            newError = { ...e, message: 'collections names must be unique' };
-          }
-          return newError;
+  dynamicValidateConfig.errors = ajv.errors;
+
+  return valid;
+}
+
+function extractValidationErrors(validator) {
+  return validator.errors.map(e => {
+    switch (e.keyword) {
+      // TODO: remove after https://github.com/ajv-validator/ajv-keywords/pull/123 is merged
+      case 'uniqueItemProperties': {
+        const path = e.instancePath || '';
+        let newError = e;
+        if (path.endsWith('/fields')) {
+          newError = { ...e, message: 'fields names must be unique' };
+        } else if (path.endsWith('/files')) {
+          newError = { ...e, message: 'files names must be unique' };
+        } else if (path.endsWith('/collections')) {
+          newError = { ...e, message: 'collections names must be unique' };
         }
-        case 'instanceof': {
-          const path = e.instancePath || '';
-          let newError = e;
-          if (/fields\/\d+\/pattern\/\d+/.test(path)) {
-            newError = {
-              ...e,
-              message: 'must be a regular expression',
-            };
-          }
-          return newError;
-        }
-        default:
-          return e;
+        return newError;
       }
-    });
+      case 'instanceof': {
+        const path = e.instancePath || '';
+        let newError = e;
+        if (/fields\/\d+\/pattern\/\d+/.test(path)) {
+          newError = {
+            ...e,
+            message: 'must be a regular expression',
+          };
+        }
+        return newError;
+      }
+      default:
+        return e;
+    }
+  });
+}
+
+export function hasCustomWidgetSchemas() {
+  const widgetSchemas = getWidgetSchemas();
+  const customWidgets = Object.keys(widgetSchemas).filter(
+    widgetKey => NativeCMSWidgets.includes(widgetKey) === false,
+  );
+
+  return customWidgets.length > 0;
+}
+
+export function validateConfig(config) {
+  let validate;
+  if (hasCustomWidgetSchemas()) {
+    validate = dynamicValidateConfig;
+  } else {
+    validate = staticValidateConfig;
+  }
+
+  const result = validate(config);
+
+  if (result === false) {
+    const errors = extractValidationErrors(validate);
     console.error('Config Errors', errors);
     throw new ConfigError(errors);
   }
+
+  return result;
 }
