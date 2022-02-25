@@ -610,6 +610,7 @@ type CollectionObject = {
   public_folder?: string;
   preview_path?: string;
   preview_path_date_field?: string;
+  preview_preserve_slash?: boolean;
   summary?: string;
   filter?: FilterRule;
   type: 'file_based_collection' | 'folder_based_collection';
