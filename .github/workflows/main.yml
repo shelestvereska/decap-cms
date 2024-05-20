@@ -1,0 +1,385 @@
+            - name: github-action-auto-format
+  # You may pin to the exact commit or the version.
+  # uses: cloudposse/github-action-auto-format@970af4c15a720047204400fe5b5ae52fb2991e9b
+  uses: cloudposse/github-action-auto-format@v0.12.0
+  with:
+    # The path on the github-runner where the auto-format action scripts are checked out at runtime
+    actions-files-checkout-path: # optional, default is github-action-auto-format
+    # GitHub username for writing new commits
+    bot-name: # optional, default is cloudpossebot
+    # Email address associated with the GitHub user for writing new commits
+    bot-email: # optional
+    # Name of formatting task to execute. (Options include: readme, github, terraform, and context.)
+    format-task: 
+    # GitHub Token for use in `github_format.sh` and PR creation steps. This token must be granted `workflows` permissions.
+    workflow-token: 
+
+
+              - name: Synopsys Action
+  # You may pin to the exact commit or the version.
+  # uses: synopsys-sig/synopsys-action@e17a353931c37b8507d717f49bce7b6ae8a2c053
+  uses: synopsys-sig/synopsys-action@v1.9.0
+  with:
+    # Coverity url
+    coverity_url: # optional
+    # Coverity user name
+    coverity_user: # optional
+    # Coverity password
+    coverity_passphrase: # optional
+    # Coverity Project Name
+    coverity_project_name: # optional
+    # Coverity Stream Name
+    coverity_stream_name: # optional
+    # Coverity Install Directory
+    coverity_install_directory: # optional
+    # Coverity Policy View
+    coverity_policy_view: # optional
+    # Repository Name
+    coverity_repository_name: # optional
+    # Branch name
+    coverity_branch_name: # optional
+    # Flag to enable/disable to run coverity scan locally.
+    coverity_local: # optional
+    # If provided, Synopsys Action will download specific version of coverity thin client to use.
+    coverity_version: # optional
+    # If provided, Synopsys Action will download specific version of coverity thin client to use.
+    bridge_coverity_version: # optional
+    # Polaris Access Token
+    polaris_access_token: # optional
+    # Polaris Application Name
+    polaris_application_name: # optional
+    # Polaris Project Name
+    polaris_project_name: # optional
+    # Polaris Assess Types SAST/SCA
+    polaris_assessment_types: # optional
+    # Polaris Server URL
+    polaris_server_url: # optional
+    # Flag to enable pull request comments based on Polaris scan result
+    polaris_prComment_enabled: # optional
+    # List of severities for which the PR Comments should be created
+    polaris_prComment_severities: # optional
+    # Polaris Triage
+    polaris_triage: # optional
+    # Polaris branch name
+    polaris_branch_name: # optional
+    # Polaris parent branch name
+    polaris_branch_parent_name: # optional
+    # Polaris test type to trigger signature scan or package manager scan
+    polaris_test_sca_type: # optional
+    # Flag to enable/disable Polaris SARIF report generation
+    polaris_reports_sarif_create: # optional
+    # File path including file name where Polaris SARIF report should be created
+    polaris_reports_sarif_file_path: # optional
+    # Indicates what SAST/SCA issues severity categories to include in Polaris SARIF file report
+    polaris_reports_sarif_severities: # optional
+    # Flag to enable/disable Component-Version grouping for SCA Issues in Polaris SARIF report rules section
+    polaris_reports_sarif_groupSCAIssues: # optional
+    # Enum to indicate which assessment issues type to include in Polaris SARIF file report
+    polaris_reports_sarif_issue_types: # optional
+    # Flag to enable/disable uploading of Polaris SARIF report to GitHub Advanced Security
+    polaris_upload_sarif_report: # optional
+    # Synopsys Bridge Install Directory
+    synopsys_bridge_install_directory: # optional
+    # URL to download bridge from
+    synopsys_bridge_download_url: # optional
+    # URL for blackduck hub
+    blackduck_url: # optional
+    # API token to access blackduck
+    blackduck_token: # optional
+    # Directory to find or install detect
+    blackduck_install_directory: # optional
+    # Scan Mode. (true for intelligent scan & false for rapid scan)
+    blackduck_scan_full: # optional
+    # If provided, Blackduck will break the build if any issues produced match one of the given severities
+    blackduck_scan_failure_severities: # optional
+    # If set as true, separate Fix PRs will be created if vulnerability is found after scan
+    blackduck_automation_fixpr: # optional
+    # Flag to enable/disable the automatic fix pull request creations for Black Duck
+    blackduck_fixpr_enabled: # optional
+    # Maximum number of Pull Requests to be created that violate policies
+    blackduck_fixpr_maxCount: # optional
+    # If provided, Fix PRs will be created only for given severities
+    blackduck_fixpr_filter_severities: # optional
+    # Flag to enable long term upgrade guidance
+    blackduck_fixpr_useUpgradeGuidance: # optional
+    # If provided, Synopsys-action will configure the version of Bridge
+    synopsys_bridge_download_version: # optional
+    # Flag to enable pull request comments for new issues found in the Black Duck scan
+    blackduck_prComment_enabled: # optional
+    # Flag to enable/disable Black Duck SARIF report generation
+    blackduck_reports_sarif_create: # optional
+    # File path including file name where Black Duck SARIF report should be created
+    blackduck_reports_sarif_file_path: # optional
+    # Indicates what SAST/SCA issues severity categories to include in Black Duck SARIF file report
+    blackduck_reports_sarif_severities: # optional
+    # Flag to enable/disable Component-Version grouping for SCA Issues in Black Duck SARIF report rules section
+    blackduck_reports_sarif_groupSCAIssues: # optional
+    # Flag to enable/disable uploading of Black Duck SARIF report to GitHub Advanced Security
+    blackduck_upload_sarif_report: # optional
+    # Flag to enable pull request comments for new issues found in the Coverity scan
+    coverity_prComment_enabled: # optional
+    # Github token to be used for git related rest operation
+    github_token: # optional
+    # To include diagnostics info and export as zip
+    include_diagnostics: # optional
+    # Number of days to keep the diagnostics files downloadable
+    diagnostics_retention_days: # optional
+    # If provided, Synopsys Action will be using local network to download and execute bridge .
+    bridge_network_airgap: # optional
+    # If provided, Synopsys Action will be using local network to download and execute bridge .
+    network_airgap: # optional
+
+
+            - name: SonarCloud Scan
+  # You may pin to the exact commit or the version.
+  # uses: SonarSource/sonarcloud-github-action@49e6cd3b187936a73b8280d59ffd9da69df63ec9
+  uses: SonarSource/sonarcloud-github-action@v2.1.1
+  with:
+    # Additional arguments to the sonarcloud scanner
+    args: # optional
+    # Set the sonar.projectBaseDir analysis property
+    projectBaseDir: # optional, default is .
+
+
+            - name: SonarQube Quality Gate Check
+  # You may pin to the exact commit or the version.
+  # uses: SonarSource/sonarqube-quality-gate-action@d304d050d930b02a896b0f85935344f023928496
+  uses: SonarSource/sonarqube-quality-gate-action@v1.1.0
+  with:
+    # Location of the scanner metadata report file
+    scanMetadataReportFile: # optional, default is .scannerwork/report-task.txt
+
+
+                      - name: Official SonarQube Scan
+  # You may pin to the exact commit or the version.
+  # uses: SonarSource/sonarqube-scan-action@53c3e3207fe4b8d52e2f1ac9d6eb1d2506f626c0
+  uses: SonarSource/sonarqube-scan-action@v2.0.2
+  with:
+    # Additional arguments to the sonar-scanner
+    args: # optional
+    # Set the sonar.projectBaseDir analysis property
+    projectBaseDir: # optional, default is .
+
+
+                      - name: SonarQube Pull Request Comment
+  # You may pin to the exact commit or the version.
+  # uses: campos-pay/sonarqube-pr-comment@6bd9213d035bc7da1367568a96bbc40c51a9db13
+  uses: campos-pay/sonarqube-pr-comment@v0.1.3
+  with:
+    # SonarQube Url
+    sonar_host_url: 
+    # Token Project Sonar
+    sonar_token: 
+    # Name Project
+    sonar_projectkey: 
+    # GitHub Token
+    github-token: 
+
+
+                      - name: Stop Merging
+  # You may pin to the exact commit or the version.
+  # uses: bennycode/stop-merging@c6a26d0775b4240a935c368e0a1a0116510c4245
+  uses: bennycode/stop-merging@v0.1.3
+  with:
+    # GitHub Token with "repo" scope
+    GITHUB_TOKEN: 
+    # Branch to check
+    GIT_BRANCH: # optional, default is main
+    # Commit prefix which can bypass the status check
+    BYPASS_PREFIX: # optional, default is fix
+
+
+                    - name: Pipeline Security Engine
+  # You may pin to the exact commit or the version.
+  # uses: invisirisk/pse-action@8f326eeb90499f78dcb1cfe8e2c007efd0d0c4be
+  uses: invisirisk/pse-action@v1.0.5
+  with:
+    # github token
+    github-token: 
+
+
+                      - name: Get Snyk
+  # You may pin to the exact commit or the version.
+  # uses: turtlebrowser/get-snyk@7e8cfcc4046b3fb14f34226754db39429be6f56f
+  uses: turtlebrowser/get-snyk@v1.0
+
+
+            - name: Snyk
+  # You may pin to the exact commit or the version.
+  # uses: snyk/actions@b98d498629f1c368650224d6d212bf7dfa89e4bf
+  uses: snyk/actions@0.4.0
+  with:
+    # Which Snyk command to run, defaults to test
+    command: # optional, default is test
+    # Additional arguments to pass to Snyk
+    args: # optional
+    # Output a snyk.json file with results if running the test command
+    json: # optional
+
+
+
+            - name: Veracode DAST Essentials Action
+  # You may pin to the exact commit or the version.
+  # uses: veracode/veracode-dast-essentials-action@81345189ab11599e83578e9b03c6f5950112e495
+  uses: veracode/veracode-dast-essentials-action@v1.0.1
+  with:
+    # Webhook Secret of the DAST Essentials Scan Target
+    VERACODE_WEBHOOK: 
+    # API Secret ID of the DAST Essentials Scan Target
+    VERACODE_SECRET_ID: 
+    # API Secret ID Key of the DAST Essentials Scan Target
+    VERACODE_SECRET_ID_KEY: 
+    # Region of the DAST Essentials
+    REGION: # optional, default is us
+    # Flag whether the report should be downloaded as JUnit XML file
+    pull-report: # optional, default is false
+
+
+
+                      - name: Veracode Pipeline-Scan
+  # You may pin to the exact commit or the version.
+  # uses: veracode/Veracode-pipeline-scan-action@e4326eb9e6735637c250e725c67d1b5f56d1a97c
+  uses: veracode/Veracode-pipeline-scan-action@v1.0.15
+  with:
+    # vid
+    vid: 
+    # vkey
+    vkey: 
+    # Filename of the packaged application to upload and scan.
+    file: 
+    # GITHUB_TOKEN or a repo scoped PAT.
+    token: # default is ${{ github.token }}
+    # Name of the Veracode default policy or custom-built policy to apply to the scan results.
+    veracode_policy_name: # optional
+    # DPERECATED, WILL BE REMOVED WITH NEXT VERSION - Name of the security policy to download as a file. Required only if you want to download the configuration for a custom policy defined by your organization. After downloading the policy, you can provide this file in a subsequent command using the policy_file parameter.
+    request_policy: # optional
+    # Fail the pipeline job if the scan finds flaws of the specified severities. Enter a comma-separated list of severities in quotation marks.
+    fail_on_severity: # optional
+    # Fail the pipeline job if the scan finds flaws of the specified CWEs. Enter a comma-separated list of CWE IDs.
+    fail_on_cwe: # optional
+    # Filter the flaws that exist in the specified baseline file and show only the additional flaws in the current scan.
+    baseline_file: # optional
+    # DPERECATED, WILL BE REMOVED WITH NEXT VERSION - Name of the Veracode default policy rule to apply to the scan results. You can only use this parameter with a Veracode default policy.
+    policy_name: # optional
+    # Name of the local policy file you want to apply to the scan results.
+    policy_file: # optional
+    # Amount of time, in minutes, for the Pipeline Scan to wait before reporting an unsuccessful scan if the scan does not complete. Default is 60 minutes, which is also the maximum value.
+    timeout: # optional
+    # Enter true to show detailed messages for each issue in the results summary.
+    issue_details: # optional
+    # Enter true to show a human-readable results summary on the console. Default is true.
+    summary_display: # optional
+    # Enter true to show the JSON containing the scan results on the console. Default is false.
+    json_display: # optional
+    # Enter true to display detailed messages in the scan results. Default is false.
+    verbose: # optional
+    # Enter true to save the scan results as a human-readable file. Default is false.
+    summary_output: # optional
+    # Enter the filename of the scan results summary file. The file is stored in the current directory. Default is results.txt.
+    summary_output_file: # optional
+    # Enter true to save the scan results in JSON format. Default is true.
+    json_output: # optional
+    # Rename the JSON file that contains the scan results. The file is stored in the current directory. Default filename is results.json.
+    json_output_file: # optional
+    # Enter the filename in the current directory to save results that violate pass-fail criteria. Default is filtered_results.json.
+    filtered_json_output_file: # optional
+    # Enter the name of the CI/CD code repository that runs a Pipeline Scan. This parameter adds the repository name to the scan results, which can help you track scans across repositories.
+    project_name: # optional
+    # Enter the source control URL for the CI/CD code repository that runs a Pipeline Scan.
+    project_url: # optional
+    # Enter the source control reference, revision, or branch for the CI/CD code repository that runs a Pipeline Scan.
+    project_ref: # optional
+    # Enter the [application profile](https://docs.veracode.com/r/request_profile) ID for the application you want to upload and scan.
+    app_id: # optional
+    # Enter one these values, which are case-sensitive, for the type of development stage: Development, Testing, Release.
+    development_stage: # optional
+    # Enable debug mode. 1 for on
+    debug: # optional
+    # Enable the storage of a baseline file. Takes true or false
+    store_baseline_file: # optional
+    # Enter the branch name where the baseline file should be stored
+    store_baseline_file_branch: # optional
+    # From which results should the baseline file be created. standard = full results || filtered = filtered results
+    create_baseline_from: # optional
+    # Fail the build upon findings. Takes true or false
+    fail_build: # optional
+    # Enter a case-sensitive, comma-separated list of name patterns that represent the names of the modules to scan as top-level modules. Veracode identifies these modules during prescan. The * wildcard matches zero or more characters. The ? wildcard matches exactly one character. For example, to include various module names that contain module: --include "module 1, module-*, module2.jar". The scan results show the names of the modules that Veracode identified and the modules included in the scan. This parameter does not pause, stop, or impact the performance of your pipeline.
+    include: # optional
+    # Enable it, if artifact version 2 requires usage
+    use_upgraded_version: # optional
+
+
+
+                      - name: Veracode Container/IaC/Secrets Scanning GitHub Action
+  # You may pin to the exact commit or the version.
+  # uses: veracode/container_iac_secrets_scanning@542e7e0cae95466fb5949cea48f7953321ae43fe
+  uses: veracode/container_iac_secrets_scanning@v1.0.2
+  with:
+    # vid
+    vid: 
+    # vkey
+    vkey: 
+    # GitHub token to access the repo
+    github-token: # default is ${{ github.token }}
+    # Scan command to run (scan|sbon)
+    command: # default is scan
+    # location of the scan source for the target type.
+    source: # default is .
+    # format in which to output the scan results. Enter one of the following values (json|table)
+    format: # default is json
+    # Which type of scan to run (image|archive|repo|directory)
+    type: # default is directory
+    # debug
+    debug: # optional, default is false
+    # fail_build
+    fail_build: # optional, default is false
+
+
+            - name: Secret Scanning
+  # You may pin to the exact commit or the version.
+  # uses: geekNero/secret-scanning@f10326539d3d102a31f70586c6f15cdd3fd6677f
+  uses: geekNero/secret-scanning@v1
+  with:
+    # Comma-separated list of files to exclude
+    file-exclusions: # optional, default is 0
+    # Comma-separated list of hashes to exclude
+    hash-exclusions: # optional, default is 0
+    # Comma-separated list of plugins to exclude
+    plugin-exclusions: # optional, default is 0
+    # Space-separated list of custom-regexes to include
+    custom-regexes: # optional, default is 0
+
+
+
+            - name: Secret Scanner
+  # You may pin to the exact commit or the version.
+  # uses: secret-scanner/action@bf855b904a8bca17a334986797650dacec7ed529
+  uses: secret-scanner/action@0.2.1
+  with:
+    # The version of Yelp/detect-secrets to use
+    detect_secrets_version: # optional, default is 1.2.0
+    # Extra arguments to pass to the detect-secret binary
+    detect_secret_additional_args: # optional, default is 
+    # A path to the baseline secrets file
+    baseline_file: # optional, default is .secrets.baseline
+    # The version of python to use
+    python_version: # optional, default is 3.10.4
+    # A path to the files containing things to exclude
+    exclude_files_path: # optional, default is .github/actions/secret-scanner
+
+
+
+
+                      - name: Secret Scan
+  # You may pin to the exact commit or the version.
+  # uses: max/secret-scan@40818319d07ccc6588021ead3c0af76cec2e6496
+  uses: max/secret-scan@1.0.0
+
+
+          
+          
+          
+          
+          
+          
+          
